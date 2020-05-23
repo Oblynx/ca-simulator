@@ -1,5 +1,6 @@
 using StatsBase;
-using Main.SimulatorCA;
+include("cellAutom.jl")
+using .SimulatorCA;
 
 ruleset=1:255;
 evolveCA(ca::CA,gens::Int)= gens>0 ? evolveCA(nextgeneration(ca),gens-1) : ca;

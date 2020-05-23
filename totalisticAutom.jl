@@ -1,4 +1,3 @@
-module SimulatorCA
 module Totalistic
 
 struct TCA
@@ -83,19 +82,20 @@ export draw;
 
 using ColorSchemes;
 function colorDraw(cells::BitArray, cellwidth=10, colormap=ColorSchemes.phase)
-  (lng,ncolorAxes)= size(cells)
+  lng= size(cells,1); ncolorAxes= size(cells,2);
   colorWeights= weighColors(ncolorAxes);
   for i in 1:lng
-    if cells[i] == true
+    if length(colorWeights) > 1
       colorIdx= (colorWeights*cells[i,:]) ./
                   (colorWeights*ones(size(cells[i,:])));
-      sethue(get(colormap, colorIdx)[1])
-      pt = Point(-(lng ÷ 2) * cellwidth + (i * cellwidth), 0)
-      box(pt, cellwidth, cellwidth, :fill)
+    else
+      colorIdx= cells[i] ? 1 : 0;
     end
+    sethue(get(colormap, colorIdx[1]))
+    pt = Point(-(lng ÷ 2) * cellwidth + (i * cellwidth), 0)
+    box(pt, cellwidth, cellwidth, :fill)
   end
 end
 export colorDraw;
 
-end #module
 end #module

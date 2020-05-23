@@ -2,6 +2,8 @@ using StatsBase;
 using Logging;
 using Juno;
 using Random;
+include("totalisticAutom.jl")
+using .Totalistic
 ENV["JULIA_DEBUG"] = "all"
 logger = ConsoleLogger(stdout, Logging.Debug);
 
@@ -29,7 +31,7 @@ drawCA(r::BigInt)= @png begin
     sidelength=4;
     Luxor.translate(boxtopcenter(BoundingBox()) + sidelength);
     for i in 1:ngenerations
-      colorDraw(cacells[r][i],sidelength);
+      colorDraw(cacells[r][i][:,:],sidelength,ColorSchemes.ice);
       Luxor.translate(Point(0, sidelength));
     end
   end;
@@ -46,7 +48,11 @@ vals= d-> collect(values(sort(d)));
 filter!(p->!isnan(p.second), acVar);
 ac_quant_0595= quantile(vals(acVar),[0.05,0.95]);
 filter!(p-> p.second > ac_quant_0595[1] && p.second < ac_quant_0595[2], acVar);
-filter!(p-> p.second > -2.38 && p.second < -2.37, acVar);
+if ncolorAxes>2
+  filter!(p-> p.second > -2.38 && p.second < -2.37, acVar);
+else
+  filter!(p-> p.second > -2.8 && p.second < -1.9, acVar);
+end
 display(histogram(vals(acVar); bins=20))
 
 using DataStructures;
@@ -57,4 +63,4 @@ interestingRuleset= collect(keys(acVar));
 using Printf;
 @printf("%d interesting CA rules:\n", length(interestingRuleset));
 display(interestingRuleset);
-for r in interestingRuleset; drawCA(r); sleep(0.01); end
+for r in interestingRuleset; drawCA(r); sleep(0.2); end
